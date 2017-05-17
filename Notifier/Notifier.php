@@ -53,4 +53,39 @@ class Notifier implements NotifierInterface
 
         $this->redisClient->publish('notification', json_encode($notification));
     }
+
+    /**
+     * Notify a single user
+     *
+     * @param int $user
+     * @param array $content An associative array
+     *
+     * @return self
+     */
+    public function notifySingle($user, array $content)
+    {
+        $json_content = json_encode($content);
+        $notification = array(
+            'content' => $json_content,
+            'users'   => json_encode([$user]),
+        );
+        $this->redisClient->publish('notification', json_encode($notification));
+    }
+
+    /**
+     * Notify a all users
+     *
+     * @param array $content An associative array
+     *
+     * @return self
+     */
+    public function notifyAll(array $content)
+    {
+        $json_content = json_encode($content);
+        $notification = array(
+            'content' => $json_content,
+            'users'   => json_encode(['*']),
+        );
+        $this->redisClient->publish('notification', json_encode($notification));
+    }
 }
