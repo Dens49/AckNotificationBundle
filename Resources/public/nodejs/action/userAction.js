@@ -18,7 +18,7 @@ module.exports = {
         redisManager.addUser("user:" + appUser.id + "_" + appUser.socket_id, appUser);
     },
     disconnect: function (socket) {
-        redisManager.deleteUserKeys("user:[A-z,0-9]*" + "_/#" + socket.id);
+        redisManager.deleteUserKeys("user:[A-z,0-9]*_" + socket.id);
     }
 };
 
