@@ -8,14 +8,14 @@ module.exports = {
         'use strict';
 
         var appUser = {
-            id           : user.id,
+            username     : user.username,
+            token        : user.token,
             socket_id    : socket.id,
             last_refresh : (new Date()).getTime()
         };
 
-        redisManager.deleteUserKeys("user:" + user.id + "_*");
-
-        redisManager.addUser("user:" + appUser.id + "_" + appUser.socket_id, appUser);
+        redisManager.deleteUserKeys("user:" + user.username + "_*");
+        redisManager.addUser("user:" + appUser.username + "_" + appUser.socket_id, appUser);
     },
     disconnect: function (socket) {
         redisManager.deleteUserKeys("user:[A-z,0-9]*_" + socket.id);

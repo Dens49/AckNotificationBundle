@@ -1,6 +1,5 @@
 var
     nconf                = require('nconf'),
-    http                 = require('http'),
     color                = require('colors'),
     io                   = require('socket.io'),
     util                 = require('util'),
@@ -19,8 +18,7 @@ function Core() {
     core = this;
 
     this.prepareSocketIO = function () {
-        server = http.createServer();
-        io     = io.listen(server);
+        io = io(nconf.get('network:port'));
 
         io.on('connection', function (socket) {
             'use strict';
@@ -36,13 +34,8 @@ function Core() {
     };
 
     this.startSocketIO = function () {
-        server.listen(nconf.get('network:port'), nconf.get('network:ip'));
-
-        server.once('listening', function () {
-            core.writeLog('Socket.io listening on ' + nconf.get('network:ip') + ':' + nconf.get('network:port'), 'success');
-
-            notificationListener.listen(io);
-        });
+        core.writeLog('Socket.io listening on ' + nconf.get('network:ip') + ':' + nconf.get('network:port'), 'success');
+        notificationListener.listen(io);
     };
 
     this.writeLog = function(message, type) {
