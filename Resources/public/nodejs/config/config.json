@@ -7,6 +7,10 @@
         "interval": 50,
         "limit": 10000
     },
+    "jwt": {
+        "public-key-path": "/path/to/my/public.pem",
+        "allowed-roles": [ "ROLE_A", "ROLE_B" ]
+    },
     "config": {
         "verbose": true,
         "trace": true

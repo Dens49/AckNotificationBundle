@@ -1,21 +1,49 @@
 var
-    core         = require('../core'),
+    config       = require('../config/config'),
+    logger       = require('../util/logger'),
     redis        = require('redis'),
-    redisManager = require('../manager/redisManager');
+    redisManager = require('../manager/redisManager'),
+    jwt          = require('jsonwebtoken'),
+    fs           = require('fs');
 
 module.exports = {
-    loaded: function (socket, user) {
+    loaded: function (socket, token) {
         'use strict';
+        var error = false;
+        var payload = undefined;
 
-        var appUser = {
-            username     : user.username,
-            token        : user.token,
-            socket_id    : socket.id,
-            last_refresh : (new Date()).getTime()
-        };
+        try {
+            payload = jwt.verify(token, fs.readFileSync(config.get('jwt:public-key-path')));
+        } catch (err) {
+            error = err;
+        }
 
-        redisManager.deleteUserKeys("user:" + user.username + "_*");
-        redisManager.addUser("user:" + appUser.username + "_" + appUser.socket_id, appUser);
+        if (error === false) {
+            // check if the role is allowed
+            for (var role of config.get('jwt:allowed-roles')) {
+                if (!payload.roles.includes(role)) {
+                    error = {
+                        "name": "RoleNotAllowedError",
+                        "message": "The specified roles (" + payload.roles + ") are not supported."
+                    };
+                }
+            }
+        }
+
+        if (error !== false) {
+            socket.emit('failed', JSON.stringify(error));
+        }
+        else {
+            var appUser = {
+                username     : payload.username,
+                socket_id    : socket.id,
+                last_refresh : (new Date()).getTime()
+            };
+
+            redisManager.deleteUserKeys("user:" + appUser.username + "_*");
+            redisManager.addUser("user:" + appUser.username + "_" + appUser.socket_id, appUser);
+            socket.emit('successful');
+        }
     },
     disconnect: function (socket) {
         redisManager.deleteUserKeys("user:[A-z,0-9]*_" + socket.id);
