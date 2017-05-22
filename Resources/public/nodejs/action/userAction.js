@@ -13,7 +13,7 @@ module.exports = {
         var payload = undefined;
 
         try {
-            payload = jwt.verify(token, fs.readFileSync(config.get('jwt:public-key-path')));
+            payload = jwt.verify(token, fs.readFileSync(__dirname + '/' + config.get('jwt:public-key-path')));
         } catch (err) {
             error = err;
         }
