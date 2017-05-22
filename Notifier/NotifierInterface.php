@@ -21,7 +21,7 @@ interface NotifierInterface
     /**
      * Notify a single user
      *
-     * @param int $user
+     * @param string $user
      * @param array $content An associative array
      *
      * @return self
@@ -29,7 +29,17 @@ interface NotifierInterface
     public function notifySingle($user, array $content);
 
     /**
-     * Notify a all users
+     * Notify an array of users
+     *
+     * @param array  $users
+     * @param array  $content
+     *
+     * @return self
+     */
+    public function notifyMultiple(array $users, array $content);
+
+    /**
+     * Notify all users
      *
      * @param array $content An associative array
      *

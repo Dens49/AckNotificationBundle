@@ -57,7 +57,7 @@ class Notifier implements NotifierInterface
     /**
      * Notify a single user
      *
-     * @param int $user
+     * @param string $user
      * @param array $content An associative array
      *
      * @return self
@@ -73,7 +73,26 @@ class Notifier implements NotifierInterface
     }
 
     /**
-     * Notify a all users
+     * Notify an array of users (without template)
+     *
+     * @param array  $users
+     * @param array  $content
+     *
+     * @return self
+     */
+    public function notifyMultiple(array $users, array $content)
+    {
+        $json_content = json_encode($content);
+        $notification = array(
+            'content' => $json_content,
+            'users'   => json_encode($users),
+        );
+
+        $this->redisClient->publish('notification', json_encode($notification));
+    }
+
+    /**
+     * Notify all users
      *
      * @param array $content An associative array
      *
