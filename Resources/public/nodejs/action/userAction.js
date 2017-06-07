@@ -20,13 +20,12 @@ module.exports = {
 
         if (error === false) {
             // check if the role is allowed
-            for (var role of config.get('jwt:allowed-roles')) {
-                if (!payload.roles.includes(role)) {
-                    error = {
-                        "name": "RoleNotAllowedError",
-                        "message": "The specified roles (" + payload.roles + ") are not supported."
-                    };
-                }
+            var intersectionExists = (element, index, array) => config.get('jwt:allowed-roles').indexOf(element) > -1 ;
+            if (!payload.roles.some(intersectionExists)) {
+                error = {
+                    "name": "RoleNotAllowedError",
+                    "message": "The specified roles (" + payload.roles + ") are not supported."
+                };
             }
         }
 
@@ -49,4 +48,3 @@ module.exports = {
         redisManager.deleteUserKeys("user:[A-z,0-9]*_" + socket.id);
     }
 };
-
