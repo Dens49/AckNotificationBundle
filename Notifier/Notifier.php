@@ -22,12 +22,22 @@ class Notifier implements NotifierInterface
     private $redisClient;
 
     /**
-     * NotificationManager constructor.
+     * @var bool $active
      */
-    public function __construct(EngineInterface $templating, RedisClient $redisClient)
+    protected $active;
+
+    /**
+     * NotificationManager constructor.
+     *
+     * @param EngineInterface $templating
+     * @param RedisClient $redisClient
+     * @param bool $active
+     */
+    public function __construct(EngineInterface $templating, RedisClient $redisClient, bool $active)
     {
         $this->templating  = $templating;
         $this->redisClient = $redisClient;
+        $this->active = $active;
     }
 
     /**
@@ -41,6 +51,10 @@ class Notifier implements NotifierInterface
      */
     public function notify($template, $users, $parameters = array())
     {
+        if (!$this->active) {
+            return $this;
+        }
+
         $content = $this->templating->render(
             $template,
             $parameters
@@ -64,6 +78,10 @@ class Notifier implements NotifierInterface
      */
     public function notifySingle($user, array $content)
     {
+        if (!$this->active) {
+            return $this;
+        }
+
         $json_content = json_encode($content);
         $notification = array(
             'content' => $json_content,
@@ -82,6 +100,10 @@ class Notifier implements NotifierInterface
      */
     public function notifyMultiple(array $users, array $content)
     {
+        if (!$this->active) {
+            return $this;
+        }
+
         $json_content = json_encode($content);
         $notification = array(
             'content' => $json_content,
@@ -100,6 +122,10 @@ class Notifier implements NotifierInterface
      */
     public function notifyAll(array $content)
     {
+        if (!$this->active) {
+            return $this;
+        }
+
         $json_content = json_encode($content);
         $notification = array(
             'content' => $json_content,

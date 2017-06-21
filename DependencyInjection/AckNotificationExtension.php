@@ -17,6 +17,12 @@ class AckNotificationExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container)
     {
+        // load configs
+        $configuration = new Configuration();
+        $processedConfig = $this->processConfiguration( $configuration, $configs );
+        $container->setParameter('ack_notification.notifications_active', $processedConfig['notifications_active']);
+
+        // load service.yml
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
     }

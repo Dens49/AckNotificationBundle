@@ -5,3 +5,4 @@ services:
         arguments:
             - "@templating"
             - "@snc_redis.default_client"
+            - "%notifications_active%"
